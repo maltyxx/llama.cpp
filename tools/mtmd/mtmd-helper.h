@@ -33,7 +33,7 @@ MTMD_API mtmd_bitmap * mtmd_helper_bitmap_init_from_file(mtmd_context * ctx, con
 
 // helper function to construct a mtmd_bitmap from a buffer containing a file
 // supported formats:
-//     image: formats supported by stb_image: jpg, png, bmp, gif, etc.
+//     image: jpg, png, bmp, gif (via stb_image), webp (via libwebp, optional)
 //     audio: formats supported by miniaudio: wav, mp3, flac
 // note: audio files will be auto-detected based on magic bytes
 // returns nullptr on failure

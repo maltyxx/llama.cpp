@@ -32,6 +32,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
+#ifdef MTMD_SUPPORT_WEBP
+#include <webp/decode.h>
+#endif
+
 #ifdef MTMD_INTERNAL_HEADER
 #error "mtmd-helper is a public library outside of mtmd. it must not include internal headers"
 #endif
@@ -494,6 +498,21 @@ mtmd_bitmap * mtmd_helper_bitmap_init_from_buf(mtmd_context * ctx, const unsigne
     }
 
     // otherwise, we assume it's an image
+
+#ifdef MTMD_SUPPORT_WEBP
+    if (len >= 12 && memcmp(buf, "RIFF", 4) == 0 && memcmp(buf + 8, "WEBP", 4) == 0) {
+        int nx, ny;
+        uint8_t * data = WebPDecodeRGB(buf, len, &nx, &ny);
+        if (!data) {
+            LOG_ERR("%s: failed to decode WebP image\n", __func__);
+            return nullptr;
+        }
+        auto * result = mtmd_bitmap_init(nx, ny, data);
+        WebPFree(data);
+        return result;
+    }
+#endif
+
     mtmd_bitmap * result = nullptr;
     {
         int nx, ny, nc;
