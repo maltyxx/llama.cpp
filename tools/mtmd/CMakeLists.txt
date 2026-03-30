@@ -76,6 +76,19 @@ set_target_properties(mtmd
 
 install(TARGETS mtmd LIBRARY PUBLIC_HEADER)
 
+# WebP image format support (optional)
+option(MTMD_WEBP "mtmd: enable WebP image format support" ON)
+if (MTMD_WEBP)
+    find_package(WebP QUIET)
+    if (WebP_FOUND)
+        message(STATUS "WebP found, enabling WebP image support")
+        target_link_libraries(mtmd PRIVATE WebP::webp)
+        target_compile_definitions(mtmd PRIVATE MTMD_SUPPORT_WEBP)
+    else()
+        message(STATUS "WebP not found, WebP image support disabled")
+    endif()
+endif()
+
 if (NOT MSVC)
     # for stb_image.h and miniaudio.h
     target_compile_options(mtmd PRIVATE -Wno-cast-qual)
